@@ -29,7 +29,6 @@ class SearchEngine:
                 # Format response similar to Tavily
                 response = {
                     "query": query,
-                    "summary": self.generate_summary(query, results),
                     "results": [
                         {
                             "title": result.title,
@@ -45,13 +44,3 @@ class SearchEngine:
                 # Cache the result
                 self.cache[cache_key] = (response, datetime.now())
                 return response
-
-    def generate_summary(self, query: str, results: List[SearchResult]) -> str:
-        """Generate a summary answer from search results"""
-        if not results:
-            return f"No recent information found for '{query}'."
-        
-        # Simple summary generation
-        # In practice, this would use an LLM
-        top_snippets = [result.snippet for result in results[:3]]
-        return f"Based on recent sources: {' '.join(top_snippets[:200])}..."
