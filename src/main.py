@@ -1,8 +1,8 @@
 import asyncio
 import json
-from search.engine import SearchEngine
 import contextlib
-from utils import spinner
+from .search.engine import SearchEngine
+from .utils import spinner
 
 # Example usage
 async def search(query: str, max_results: int = 5):
