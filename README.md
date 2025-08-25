@@ -1,10 +1,17 @@
 # Web Crawler
 
-## Overview
 A minimal, real-time web search CLI. Enter a query and get structured JSON output with a brief summary and recent links.
 
-## How to Run
+## Setup
 - Prereqs: Python 3.12+ and [uv](https://docs.astral.sh/uv/)
+- Clone the repository and navigate into the project root:
+
+```bash
+git clone https://github.com/financial-datasets/web-crawler.git
+cd web-crawler
+```
+
+## How to Run
 - From the repo root, run:
 
 ```bash
