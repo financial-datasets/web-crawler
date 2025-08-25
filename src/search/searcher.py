@@ -130,16 +130,16 @@ class WebSearcher:
                 
                 # Resolve Google News URLs to get original article URLs
                 if domain == 'news.google.com':
+                    resolved_urls = await asyncio.gather(
+                        *(self.resolve_google_news_url(r.url) for r in results)
+                    )
                     resolved_results = []
-                    for result in results:
-                        resolved_url = await self.resolve_google_news_url(result.url)
-                        # Create new result with resolved URL
-                        resolved_result = SearchResult(
-                            title=result.title,
+                    for r, resolved_url in zip(results, resolved_urls):
+                        resolved_results.append(SearchResult(
+                            title=r.title,
                             url=resolved_url,
-                            published_date=result.published_date,
-                        )
-                        resolved_results.append(resolved_result)
+                            published_date=r.published_date,
+                        ))
                     results = resolved_results
             
                 return results
@@ -159,8 +159,8 @@ class WebSearcher:
         try:
             from googlenewsdecoder import gnewsdecoder
             
-            # Use googlenewsdecoder to decode the URL
-            result = gnewsdecoder(google_url, interval=1)
+            # Offload synchronous decoder to a thread to avoid blocking event loop
+            result = await asyncio.to_thread(gnewsdecoder, google_url, interval=1)
             
             if result.get("status"):
                 return result["decoded_url"]

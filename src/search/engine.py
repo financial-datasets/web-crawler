@@ -33,12 +33,10 @@ class SearchEngine:
                         {
                             "title": result.title,
                             "url": result.url,
-                            "source": result.source,
                             "published_date": result.published_date.isoformat() if result.published_date else None,
                         }
                         for result in results[:max_results]
                     ],
-                    "response_time": 0  # Would measure actual response time
                 }
                 
                 # Cache the result
