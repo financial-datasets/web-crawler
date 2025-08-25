@@ -30,7 +30,7 @@ uv run web-crawler
 
 ## Roadmap
 We'd love to get help on:
-- [ ] Parsing content from pages
-- [ ] Summarizing content with LLMs
+- [ ] Parsing content from JavaScript-heavy pages (e.g. MSN, Bloomberg, etc.)
+- [ ] Summarizing parsed content with LLMs
 - [ ] Adding more sources (Bing, Reddit, etc.)
 - [ ] Parallelization for faster queries
