@@ -6,7 +6,7 @@ A minimal, real-time web search CLI that searches the internet for you. Enter a 
 
 
 ## Setup
-- Prerequisites: Python 3.12+ and [uv](https://docs.astral.sh/uv/)
+**Prerequisites**: Python 3.12+ and [uv](https://docs.astral.sh/uv/)
 
 ```bash
 # Clone the repository
@@ -17,10 +17,8 @@ cd web-crawler
 ```
 
 ## How to Run
-- From the repo root, run:
-
 ```bash
-# Run the program!
+# From the repo root, run:
 uv run web-crawler
 ```
 
