@@ -27,3 +27,10 @@ uv run web-crawler
 - When prompted, enter your search (e.g., "AAPL latest earnings transcript").
 - Results print as JSON. Enter another query to continue.
 - Quit with `q`, `quit`, `exit`, or press Ctrl+C.
+
+## Roadmap
+We'd love to get help on:
+- [ ] parsing content from pages
+- [ ] summarizing content with LLMs
+- [ ] adding more sources (Bing, Reddit, etc.)
+- [ ] parallelization for faster queries
