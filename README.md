@@ -2,7 +2,7 @@
 
 A minimal, real-time web search CLI that searches the internet for you. Enter a query and get search results as JSON (title, url, published_date), sorted by recency.
 
-<img width="1164" height="633" alt="Screenshot 2025-08-25 at 12 30 03 PM" src="https://github.com/user-attachments/assets/8c3cfab6-6f7a-4dd0-a14c-ad2893c09726" />
+<img width="1162" height="628" alt="Screenshot 2025-08-25 at 12 31 22 PM" src="https://github.com/user-attachments/assets/12e05c97-4e46-4fd3-a467-3276f290b63d" />
 
 
 ## Setup
