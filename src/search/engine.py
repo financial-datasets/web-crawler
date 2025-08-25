@@ -34,10 +34,8 @@ class SearchEngine:
                         {
                             "title": result.title,
                             "url": result.url,
-                            "content": result.snippet,
                             "source": result.source,
                             "published_date": result.published_date.isoformat() if result.published_date else None,
-                            "raw_content": None  # Could fetch full content if needed
                         }
                         for result in results[:max_results]
                     ],

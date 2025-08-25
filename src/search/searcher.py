@@ -9,9 +9,7 @@ from typing import List, Dict, Optional
 class SearchResult(BaseModel):
     title: str
     url: str
-    snippet: str
     published_date: Optional[datetime] = None
-    source: str
 
 
 class WebSearcher:
@@ -69,9 +67,6 @@ class WebSearcher:
 
     async def search_multiple_sources(self, query: str, max_results_per_source: int = 5, debug: bool = True) -> List[SearchResult]:
         """Search across multiple sources simultaneously"""
-        if debug:
-            print(f"Searching for: '{query}' across {len(self.site_configs)} sources...")
-        
         tasks = []
         for domain in self.site_configs.keys():
             tasks.append(self.search_single_source(domain, query, max_results_per_source))
@@ -142,9 +137,7 @@ class WebSearcher:
                         resolved_result = SearchResult(
                             title=result.title,
                             url=resolved_url,
-                            snippet=result.snippet,
                             published_date=result.published_date,
-                            source=result.source,
                         )
                         resolved_results.append(resolved_result)
                     results = resolved_results
@@ -206,9 +199,7 @@ class WebSearcher:
                     result = SearchResult(
                         title=self.clean_text(title),
                         url=url,  # Will be resolved later in async context
-                        snippet=self.clean_snippet(description),
                         published_date=self.parse_rss_date(pub_date),
-                        source=domain.split('.')[0].title(),
                     )
                     results.append(result)
                 
@@ -270,14 +261,6 @@ class WebSearcher:
         text = ' '.join(text.split())
         
         return text
-    
-    def clean_snippet(self, snippet: str) -> str:
-        """Clean and truncate snippet text"""
-        snippet = self.clean_text(snippet)
-        # Truncate to reasonable length
-        if len(snippet) > 200:
-            snippet = snippet[:200] + "..."
-        return snippet
 
     def parse_date(self, date_str: str) -> Optional[datetime]:
         """Parse various date formats"""
