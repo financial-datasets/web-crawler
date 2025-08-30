@@ -3,7 +3,6 @@ import aiohttp
 import re
 from datetime import datetime
 from pydantic import BaseModel
-from typing import List
 
 
 class SearchResult(BaseModel):
@@ -65,7 +64,7 @@ class WebSearcher:
             'Cache-Control': 'max-age=0',
         }
 
-    async def search(self, query: str, max_results_per_source: int = 5) -> List[SearchResult]:
+    async def search(self, query: str, max_results_per_source: int = 5) -> list[SearchResult]:
         """Search across multiple sources simultaneously"""
         tasks = []
         for domain in self.site_configs.keys():
@@ -91,7 +90,7 @@ class WebSearcher:
         
         return all_results
 
-    async def get_search_results(self, domain: str, query: str, max_results: int) -> List[SearchResult]:
+    async def get_search_results(self, domain: str, query: str, max_results: int) -> list[SearchResult]:
         """Handle API-based and RSS-based searches"""
         search_url = self.site_configs[domain]['search_url'].format(query=query.replace(' ', '%20'))
         
@@ -154,7 +153,7 @@ class WebSearcher:
             # Fall back to original URL if decoding fails
             return google_url
 
-    def parse_rss_content(self, xml_content: str, domain: str, max_results: int) -> List[SearchResult]:
+    def parse_rss_content(self, xml_content: str, domain: str, max_results: int) -> list[SearchResult]:
         """Common function to parse RSS feed content"""
         try:
             from xml.etree import ElementTree as ET
