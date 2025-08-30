@@ -3,13 +3,13 @@ import aiohttp
 import re
 from datetime import datetime
 from pydantic import BaseModel
-from typing import List, Dict, Optional
+from typing import List
 
 
 class SearchResult(BaseModel):
     title: str
     url: str
-    published_date: Optional[datetime] = None
+    published_date: datetime | None = None
 
 
 class WebSearcher:
@@ -190,7 +190,7 @@ class WebSearcher:
             print(f"XML parsing error for {domain}: {str(e)}")
             return []
 
-    def parse_rss_date(self, date_str: str) -> Optional[datetime]:
+    def parse_rss_date(self, date_str: str) -> datetime | None:
         """Common function to parse RSS date formats"""
         if not date_str:
             return None
@@ -240,7 +240,7 @@ class WebSearcher:
         
         return text
 
-    def parse_date(self, date_str: str) -> Optional[datetime]:
+    def parse_date(self, date_str: str) -> datetime | None:
         """Common function to parse various date formats"""
         if not date_str:
             return None
