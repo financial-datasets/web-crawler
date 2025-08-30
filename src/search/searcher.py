@@ -65,11 +65,11 @@ class WebSearcher:
             'Cache-Control': 'max-age=0',
         }
 
-    async def search_multiple_sources(self, query: str, max_results_per_source: int = 5, debug: bool = True) -> List[SearchResult]:
+    async def search(self, query: str, max_results_per_source: int = 5) -> List[SearchResult]:
         """Search across multiple sources simultaneously"""
         tasks = []
         for domain in self.site_configs.keys():
-            tasks.append(self.search_single_source(domain, query, max_results_per_source))
+            tasks.append(self.get_search_results(domain, query, max_results_per_source))
         
         results = await asyncio.gather(*tasks, return_exceptions=True)
         
@@ -78,40 +78,22 @@ class WebSearcher:
         for i, result in enumerate(results):
             domain = list(self.site_configs.keys())[i]
             if isinstance(result, list):
-                if debug:
-                    print(f"✓ {domain}: {len(result)} results")
                 all_results.extend(result)
             elif isinstance(result, Exception):
-                if debug:
-                    print(f"✗ {domain}: Error - {str(result)}")
+                print(f"✗ {domain}: Error - {str(result)}")
             else:
-                if debug:
-                    print(f"✗ {domain}: No results")
+                print(f"✗ {domain}: No results")
         
         # Sort by recency
         all_results.sort(key=lambda x: (x.published_date or datetime.min), reverse=True)
         
-        if debug:
-            print(f"Total results found: {len(all_results)}")
+        print(f"Total results found: {len(all_results)}")
         
         return all_results
 
-    async def search_single_source(self, domain: str, query: str, max_results: int = 5) -> List[SearchResult]:
-        """Search a single source for relevant content"""
-        if domain not in self.site_configs:
-            return []
-        
-        config = self.site_configs[domain]
-        
-        try:
-            return await self.search_api_or_rss_based(domain, query, config, max_results)
-        except Exception as e:
-            print(f"Error searching {domain}: {str(e)}")
-            return []
-
-    async def search_api_or_rss_based(self, domain: str, query: str, config: Dict, max_results: int) -> List[SearchResult]:
+    async def get_search_results(self, domain: str, query: str, max_results: int) -> List[SearchResult]:
         """Handle API-based and RSS-based searches"""
-        search_url = config['search_url'].format(query=query.replace(' ', '%20'))
+        search_url = self.site_configs[domain]['search_url'].format(query=query.replace(' ', '%20'))
         
         # Add delay to avoid rate limiting
         await asyncio.sleep(0.5)
@@ -126,7 +108,7 @@ class WebSearcher:
                 
                 # Handle RSS feeds
                 xml_content = await response.text()
-                results = self.parse_rss_content(xml_content, query, domain, config, max_results)
+                results = self.parse_rss_content(xml_content, domain, max_results)
                 
                 # Resolve Google News URLs to get original article URLs
                 if domain == 'news.google.com':
@@ -172,8 +154,8 @@ class WebSearcher:
             # Fall back to original URL if decoding fails
             return google_url
 
-    def parse_rss_content(self, xml_content: str, query: str, domain: str, config: Dict, max_results: int) -> List[SearchResult]:
-        """Parse RSS feed content"""
+    def parse_rss_content(self, xml_content: str, domain: str, max_results: int) -> List[SearchResult]:
+        """Common function to parse RSS feed content"""
         try:
             from xml.etree import ElementTree as ET
             root = ET.fromstring(xml_content)
@@ -185,23 +167,19 @@ class WebSearcher:
             for item in items:
                 title_elem = item.find('title')
                 link_elem = item.find('link')
-                desc_elem = item.find('description')
                 date_elem = item.find('pubDate')
                 
                 title = title_elem.text if title_elem is not None else "No title"
                 url = link_elem.text if link_elem is not None else ""
-                description = desc_elem.text if desc_elem is not None else "No description"
                 pub_date = date_elem.text if date_elem is not None else ""
                 
-                
-                
-                if title and url:
-                    result = SearchResult(
-                        title=self.clean_text(title),
-                        url=url,  # Will be resolved later in async context
-                        published_date=self.parse_rss_date(pub_date),
-                    )
-                    results.append(result)
+                results.append(
+                    SearchResult(
+                      title=self.clean_text(title),
+                      url=url,
+                      published_date=self.parse_rss_date(pub_date),
+                  )
+                )
                 
                 if len(results) >= max_results:
                     break
@@ -213,7 +191,7 @@ class WebSearcher:
             return []
 
     def parse_rss_date(self, date_str: str) -> Optional[datetime]:
-        """Parse RSS date formats"""
+        """Common function to parse RSS date formats"""
         if not date_str:
             return None
         
@@ -226,7 +204,7 @@ class WebSearcher:
             return self.parse_date(date_str)
 
     def clean_text(self, text: str) -> str:
-        """Clean text by removing HTML entities, unicode, and extra whitespace"""
+        """Common function to clean text by removing HTML entities, unicode, and extra whitespace"""
         if not text:
             return text
             
@@ -263,7 +241,7 @@ class WebSearcher:
         return text
 
     def parse_date(self, date_str: str) -> Optional[datetime]:
-        """Parse various date formats"""
+        """Common function to parse various date formats"""
         if not date_str:
             return None
         
@@ -288,4 +266,13 @@ class WebSearcher:
                 except:
                     pass
         
-        return None 
+        return None
+    
+
+if __name__ == "__main__":
+    async def main():
+        async with WebSearcher() as searcher:
+          results = await searcher.search("Python programming", 5)
+          print(results)
+
+    asyncio.run(main())

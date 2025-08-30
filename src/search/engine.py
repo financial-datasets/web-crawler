@@ -21,7 +21,7 @@ class SearchEngine:
 
         async with self.rate_limiter:
             async with WebSearcher() as searcher:
-                results = await searcher.search_multiple_sources(query, max_results // len(searcher.site_configs), debug=True)
+                results = await searcher.search(query, max_results // len(searcher.site_configs))
 
                 # Sort results by published date descending
                 results.sort(key=lambda x: (x.published_date or datetime.min), reverse=True)
