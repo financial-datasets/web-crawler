@@ -6,8 +6,6 @@ from .google import GoogleNewsSearcher
 
 class SearchEngine:
     def __init__(self):
-        self.rate_limiter = asyncio.Semaphore(10)  # Max 10 concurrent requests
-
         # Create session once for better connection pooling
         timeout = aiohttp.ClientTimeout(total=30, connect=10)
         connector = aiohttp.TCPConnector(limit=50, limit_per_host=10)
@@ -34,31 +32,30 @@ class SearchEngine:
     async def get_search_results(self, query: str, max_results_per_source: int = 5) -> dict:
         """Main search function with rate limiting and orchestration across searchers."""
 
-        async with self.rate_limiter:
-            # Kick off all searchers in parallel and flatten results
-            tasks = [self._run_searcher(searcher, query, max_results_per_source) for searcher in self.searchers]
-            search_results: list[SearchResult] = [
-                result for results in await asyncio.gather(*tasks, return_exceptions=True) 
-                for result in results
-            ]
-            
-            # Sort results by published date
-            search_results.sort(key=lambda x: (x.published_date or datetime.min), reverse=True)
-    
-            # Format results for response
-            response = {
-                "query": query,
-                "results": [
-                    {
-                        "title": r.title,
-                        "url": r.url,
-                        "published_date": r.published_date.isoformat() if r.published_date else None,
-                    }
-                    for r in search_results
-                ],
-            }
+        # Kick off all searchers in parallel and flatten results
+        tasks = [self._run_searcher(searcher, query, max_results_per_source) for searcher in self.searchers]
+        search_results: list[SearchResult] = [
+            result for results in await asyncio.gather(*tasks, return_exceptions=True) 
+            for result in results
+        ]
+        
+        # Sort results by published date
+        search_results.sort(key=lambda x: (x.published_date or datetime.min), reverse=True)
 
-            return response
+        # Format results for response
+        response = {
+            "query": query,
+            "results": [
+                {
+                    "title": r.title,
+                    "url": r.url,
+                    "published_date": r.published_date.isoformat() if r.published_date else None,
+                }
+                for r in search_results
+            ],
+        }
+
+        return response
 
     async def _run_searcher(self, searcher: BaseSearcher, query: str, max_results: int) -> list[SearchResult]:
         # small delay to avoid rate limiting bursts
