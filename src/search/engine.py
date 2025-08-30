@@ -3,6 +3,7 @@ import aiohttp
 from datetime import datetime
 from .base import BaseSearcher, SearchResult
 from .google import GoogleNewsSearcher
+from .bing import BingNewsSearcher
 
 class SearchEngine:
     def __init__(self):
@@ -35,6 +36,7 @@ class SearchEngine:
                     "title": r.title,
                     "url": r.url,
                     "published_date": r.published_date.isoformat() if r.published_date else None,
+                    "searcher": r.searcher,
                 }
                 for r in search_results
             ],
@@ -61,7 +63,7 @@ class SearchEngine:
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Encoding': 'gzip, deflate',
             'Connection': 'keep-alive',
         }
             
@@ -73,7 +75,7 @@ class SearchEngine:
             connector=self._connector
         )
         # Initialize searchers with session
-        self.searchers = [GoogleNewsSearcher(self._session)]
+        self.searchers = [BingNewsSearcher(self._session), GoogleNewsSearcher(self._session)]
         return self
         
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -81,5 +83,10 @@ class SearchEngine:
         if self._session and not self._session.closed:
             await self._session.close()
 
+async def main():
+    async with SearchEngine() as search_engine:
+        results = await search_engine.get_search_results("Apple earnings")
+        print(results)
+
 if __name__ == "__main__":
-    asyncio.run(SearchEngine().get_search_results("Apple earnings"))
+    asyncio.run(main())

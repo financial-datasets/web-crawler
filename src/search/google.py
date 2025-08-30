@@ -6,6 +6,10 @@ class GoogleNewsSearcher(BaseSearcher):
     
     def __init__(self, session: aiohttp.ClientSession):
         self.session = session
+
+    @property
+    def searcher(self) -> str:
+        return "Google News"
     
     async def get_search_results(self, query: str, max_results: int) -> list[SearchResult]:
         search_url = f"https://news.google.com/rss/search?q={query.replace(' ', '%20')}&hl=en-US&gl=US&ceid=US:en"
@@ -18,7 +22,14 @@ class GoogleNewsSearcher(BaseSearcher):
             resolved_urls = await asyncio.gather(*(self._resolve_google_news_url(r.url) for r in results))
             final: list[SearchResult] = []
             for r, resolved in zip(results, resolved_urls):
-                final.append(SearchResult(title=r.title, url=resolved, published_date=r.published_date))
+                final.append(
+                    SearchResult(
+                        title=r.title, 
+                        url=resolved, 
+                        published_date=r.published_date,
+                        searcher=self.searcher,
+                        )
+                    )
             return final
 
     async def _resolve_google_news_url(self, url: str) -> str:

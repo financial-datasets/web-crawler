@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class SearchResult(BaseModel):
     title: str
     url: str
+    searcher: str | None = None
     published_date: datetime | None = None
 
 class BaseSearcher(ABC):
@@ -40,6 +41,7 @@ class BaseSearcher(ABC):
                         title=self.clean_text(title),
                         url=url,
                         published_date=self.parse_rss_date(pub_date),
+                        searcher=self.searcher,
                     )
                 )
 
