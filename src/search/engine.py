@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime, timedelta
-from typing import List, Dict
-from .searcher import SearchResult, WebSearcher
+from typing import Dict
+from .searcher import WebSearcher
 
 class SearchEngine:
     def __init__(self):
