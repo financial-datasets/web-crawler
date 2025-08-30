@@ -1,26 +1,24 @@
 import asyncio
 import json
 import contextlib
-import pathlib
-import sys
 
-from search.engine import SearchEngine
-from utils import spinner
+from .search.engine import SearchEngine
+from .utils import spinner
 
 
 # Example usage
 async def search(query: str):
-    search_engine = SearchEngine()
-    spinner_task = asyncio.create_task(spinner("Searching the web..."))
-    try:
-        results = await search_engine.get_search_results(query)
-    finally:
-        spinner_task.cancel()
-        with contextlib.suppress(asyncio.CancelledError):
-            await spinner_task
-        print()
-    print("Search Results:")
-    print(json.dumps(results, indent=2, default=str))
+    async with SearchEngine() as search_engine:
+        spinner_task = asyncio.create_task(spinner("Searching the web..."))
+        try:
+            results = await search_engine.get_search_results(query)
+        finally:
+            spinner_task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await spinner_task
+            print()
+        print("Search Results:")
+        print(json.dumps(results, indent=2, default=str))
 
 
 def main():

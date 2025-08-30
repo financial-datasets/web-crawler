@@ -6,17 +6,16 @@ from .google import GoogleNewsSearcher
 
 class SearchEngine:
     def __init__(self):
-        # Create session once for better connection pooling
-        timeout = aiohttp.ClientTimeout(total=30, connect=10)
-        connector = aiohttp.TCPConnector(limit=50, limit_per_host=10)
-        headers = self._get_headers()
-        self.session = aiohttp.ClientSession(headers=headers, timeout=timeout, connector=connector)
-        
-        # Initialize searchers with shared session
-        self.searchers = [GoogleNewsSearcher(self.session)]
+        # Initialize searcher classes, but don't create session yet
+        self.session = None
+        self._timeout = aiohttp.ClientTimeout(total=30, connect=10)
+        self._connector = aiohttp.TCPConnector(limit=50, limit_per_host=10)
+        self._headers = self._get_headers()
 
     async def get_search_results(self, query: str, max_results_per_source: int = 5) -> dict:
         """Main search function with rate limiting and orchestration across searchers."""
+        if not self.session or self.session.closed:
+            raise RuntimeError("SearchEngine must be used as an async context manager")
 
         # Kick off all searchers in parallel and flatten results
         tasks = [self._run_searcher(searcher, query, max_results_per_source) for searcher in self.searchers]
@@ -41,6 +40,7 @@ class SearchEngine:
             ],
         }
 
+        # Don't close session here - let context manager handle it
         return response
 
     async def _run_searcher(self, searcher: BaseSearcher, query: str, max_results: int) -> list[SearchResult]:
@@ -64,7 +64,22 @@ class SearchEngine:
             'Accept-Encoding': 'gzip, deflate, br',
             'Connection': 'keep-alive',
         }
-    
+            
+    async def __aenter__(self):
+        # Create session when entering context
+        self.session = aiohttp.ClientSession(
+            headers=self._headers, 
+            timeout=self._timeout, 
+            connector=self._connector
+        )
+        # Initialize searchers with session
+        self.searchers = [GoogleNewsSearcher(self.session)]
+        return self
+        
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        # Ensure session is properly closed when exiting context
+        if self.session and not self.session.closed:
+            await self.session.close()
 
 if __name__ == "__main__":
     asyncio.run(SearchEngine().get_search_results("Apple earnings"))
