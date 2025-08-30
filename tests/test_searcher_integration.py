@@ -1,9 +1,6 @@
-import os
 import sys
-import json
 import pathlib
 import pytest
-import asyncio
 
 # Ensure src is on sys.path for direct imports when running from repo root
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -18,7 +15,7 @@ QUERY = "Apple earnings"
 @pytest.mark.asyncio
 async def test_websearcher_search_multiple_sources_real_rss():
     async with WebSearcher() as ws:
-        results = await ws.search(QUERY, max_results_per_source=3, debug=False)
+        results = await ws.search(QUERY, max_results_per_source=3)
 
     assert isinstance(results, list)
     # We may receive zero results in transient network issues, but normally should have some
