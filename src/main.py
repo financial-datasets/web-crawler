@@ -18,7 +18,6 @@ async def search(query: str):
         spinner_task.cancel()
         with contextlib.suppress(asyncio.CancelledError):
             await spinner_task
-        await search_engine.close()  # Clean up session
         print()
     print("Search Results:")
     print(json.dumps(results, indent=2, default=str))

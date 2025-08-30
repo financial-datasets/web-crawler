@@ -15,20 +15,6 @@ class SearchEngine:
         # Initialize searchers with shared session
         self.searchers = [GoogleNewsSearcher(self.session)]
 
-    def _get_headers(self) -> dict[str, str]:
-        return {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Connection': 'keep-alive',
-        }
-
-    async def close(self):
-        """Clean up resources. Call this when done with the SearchEngine."""
-        if hasattr(self, 'session') and self.session:
-            await self.session.close()
-
     async def get_search_results(self, query: str, max_results_per_source: int = 5) -> dict:
         """Main search function with rate limiting and orchestration across searchers."""
 
@@ -68,6 +54,16 @@ class SearchEngine:
         except Exception as e:
             print(f"Exception when searching with {searcher.__class__.__name__}: {str(e)}")
             return []
+        
+    
+    def _get_headers(self) -> dict[str, str]:
+        return {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+        }
     
 
 if __name__ == "__main__":
