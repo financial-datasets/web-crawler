@@ -34,7 +34,7 @@ def main():
                 return
             asyncio.run(search(query))
     except KeyboardInterrupt:
-        print()  # graceful newline on Ctrl+C
+        print()
 
 
 if __name__ == "__main__":
