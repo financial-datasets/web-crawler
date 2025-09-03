@@ -160,6 +160,18 @@ wheels = [
 ]
 
 [[package]]
+name = "feedparser"
+version = "6.0.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sgmllib3k" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ff/aa/7af346ebeb42a76bf108027fe7f3328bb4e57a3a96e53e21fd9ef9dd6dd0/feedparser-6.0.11.tar.gz", hash = "sha256:c9d0407b64c6f2a065d0ebb292c2b35c01050cc0dc33757461aaabdc4c4184d5", size = 286197 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7c/d4/8c31aad9cc18f451c49f7f9cfb5799dadffc88177f7917bc90a66459b1d7/feedparser-6.0.11-py3-none-any.whl", hash = "sha256:0be7ee7b395572b19ebeb1d6aafb0028dee11169f1c934e0ed67d54992f4ad45", size = 81343 },
+]
+
+[[package]]
 name = "frozenlist"
 version = "1.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -592,6 +604,12 @@ wheels = [
 ]
 
 [[package]]
+name = "sgmllib3k"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9e/bd/3704a8c3e0942d711c1299ebf7b9091930adae6675d7c8f476a7ce48653c/sgmllib3k-1.0.0.tar.gz", hash = "sha256:7868fb1c8bfa764c1ac563d3cf369c381d1325d36124933a726f29fcdaa812e9", size = 5750 }
+
+[[package]]
 name = "soupsieve"
 version = "2.7"
 source = { registry = "https://pypi.org/simple" }
@@ -637,6 +655,7 @@ source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
     { name = "beautifulsoup4" },
+    { name = "feedparser" },
     { name = "googlenewsdecoder" },
     { name = "playwright" },
     { name = "pydantic" },
@@ -653,6 +672,7 @@ dev = [
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.12.15" },
     { name = "beautifulsoup4", specifier = ">=4.13.4" },
+    { name = "feedparser", specifier = ">=6.0.11" },
     { name = "googlenewsdecoder", specifier = ">=0.1.7" },
     { name = "playwright", specifier = ">=1.54.0" },
     { name = "pydantic", specifier = ">=2.8.2" },

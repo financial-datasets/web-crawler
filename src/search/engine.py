@@ -1,9 +1,11 @@
 import asyncio
 import aiohttp
 from datetime import datetime
+
 from .base import BaseSearcher, SearchResult
-from .google import GoogleNewsSearcher
 from .bing import BingNewsSearcher
+from .google import GoogleNewsSearcher
+from .wikipedia import WikipediaSearcher
 
 class SearchEngine:
     def __init__(self):
@@ -25,8 +27,8 @@ class SearchEngine:
             for result in results
         ]
         
-        # Sort results by published date
-        search_results.sort(key=lambda x: (x.published_date or datetime.min), reverse=True)
+        # Sort results by published date (normalize timezone-aware dates to naive for comparison)
+        search_results.sort(key=lambda x: self._datetime_sort_key(x.published_date), reverse=True)
 
         # Format results for response
         response = {
@@ -75,13 +77,27 @@ class SearchEngine:
             connector=self._connector
         )
         # Initialize searchers with session
-        self.searchers = [BingNewsSearcher(self._session), GoogleNewsSearcher(self._session)]
+        self.searchers = [
+            BingNewsSearcher(self._session), 
+            GoogleNewsSearcher(self._session), 
+            WikipediaSearcher(self._session),
+        ]
         return self
         
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         # Ensure session is properly closed when exiting context
         if self._session and not self._session.closed:
             await self._session.close()
+
+    def _datetime_sort_key(dt: datetime | None) -> datetime:
+      """
+      Normalize datetime objects for sorting by converting timezone-aware dates to naive.
+      Returns datetime.min for None values to sort them last when reverse=True.
+      """
+      if dt is None:
+          return datetime.min
+      # Convert timezone-aware to naive by replacing tzinfo
+      return dt.replace(tzinfo=None) if dt.tzinfo is not None else dt 
 
 async def main():
     async with SearchEngine() as search_engine:

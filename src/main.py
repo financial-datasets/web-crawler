@@ -2,8 +2,8 @@ import asyncio
 import json
 import contextlib
 
-from .search.engine import SearchEngine
-from .utils import spinner
+from src.search.engine import SearchEngine
+from src.utils import spinner
 
 
 # Example usage
