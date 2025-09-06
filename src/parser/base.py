@@ -7,7 +7,7 @@ try:
 except ImportError:  # Playwright not installed
     sync_playwright = None
 
-class PageParser:
+class BasePageParser:
     def __init__(self):
         self.visited_links = set()
 
@@ -194,7 +194,7 @@ class PageParser:
 
 if __name__ == "__main__":
     url = "https://www.cnbc.com/2025/07/31/apple-aapl-q3-earnings-report-2025.html"
-    parser = PageParser()
+    parser = BasePageParser()
     
     print("=== Testing Link Extraction ===")
     try:

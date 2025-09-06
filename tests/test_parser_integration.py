@@ -1,9 +1,5 @@
-import os
 import sys
-import re
-import json
 import pathlib
-import pytest
 
 # Ensure src is on sys.path for direct imports when running from repo root
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -11,12 +7,12 @@ SRC_DIR = REPO_ROOT / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from crawler.parser import PageParser
+from parser.base import BasePageParser
 
 URL = "https://www.cnbc.com/2025/07/31/apple-aapl-q3-earnings-report-2025.html"
 
 def test_pageparser_get_links_with_playwright_real_site(tmp_path):
-    parser = PageParser()
+    parser = BasePageParser()
 
     result = parser.get_links(URL)
 
@@ -28,7 +24,7 @@ def test_pageparser_get_links_with_playwright_real_site(tmp_path):
     assert len(links) > 5
 
 def test_pageparser_get_content_with_playwright_real_site(tmp_path):
-    parser = PageParser()
+    parser = BasePageParser()
 
     result = parser.get_content(URL)
 
