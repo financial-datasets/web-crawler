@@ -26,9 +26,20 @@ uv run web-crawler
 - Results print as JSON. Enter another query to continue.
 - Quit with `q`, `quit`, `exit`, or press Ctrl+C.
 
+## Features
+We currently have two features:
+1. Search (see `/src/search`)
+2. Parse (see `/src/parse`)
+
+#### Search
+Given a query (e.g. "Apple latest earnings"), search the internet for pages related to the query.
+
+#### Parse
+Given a URL, parse and extract the text content from the URL.
+
 ## Roadmap
 We'd love to get help on:
 - [ ] Parsing content from JavaScript-heavy pages (e.g. MSN, Bloomberg, etc.)
 - [ ] Summarizing parsed content with LLMs
-- [ ] Adding more sources (Bing, Reddit, etc.)
+- [ ] Adding more sources (Reddit, Bloomberg, etc.)
 - [ ] Parallelization for faster queries
