@@ -7,7 +7,7 @@ SRC_DIR = REPO_ROOT / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from parser.base import BasePageParser
+from parse.base import BasePageParser
 
 URL = "https://www.cnbc.com/2025/07/31/apple-aapl-q3-earnings-report-2025.html"
 
